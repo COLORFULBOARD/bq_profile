@@ -31,13 +31,17 @@ def tmp_table(client, sql):
     dataset_ref = client.dataset(dataset_id)
     client.create_dataset(bigquery.Dataset(dataset_ref))
     job_config.destination = dataset_ref.table(table_id)
-    query_job = client.query(sql, location="US", job_config=job_config)
-    query_job.result()
-    table_ref = dataset_ref.table(table_id)
+    table_ref = None
     try:
+        query_job = client.query(sql, location="US", job_config=job_config)
+        query_job.result()
+        table_ref = dataset_ref.table(table_id)
         yield table_ref
     finally:
-        client.delete_table(table_ref)
+        try:
+            client.delete_table(table_ref)
+        except:
+            pass
         client.delete_dataset(client.dataset(dataset_id))
 
 
