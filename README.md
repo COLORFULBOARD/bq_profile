@@ -63,17 +63,17 @@ GCEインスタンス上などのGCPのサービスアカウントの認証情�
 
 ### DataFrame Describe
 
-* `--output`: アウトプットファイルパス。`gs://`もOK。
+* `--output`: アウトプットCSVファイルパス。`gs://`もOK。
 
 ### BigQuery SQL
 
-* `--output`: アウトプットファイルパス。`gs://`もOK。
+* `--output`: アウトプットCSVファイルパス。`gs://`もOK。
 * `--output-table`: `dataset.table`形式のBQテーブル名。`--output`よりも優先される。
 * `--disposition`: `--output-table`が既に存在する場合の動きを指定します。`fail`,`replace`,`append`のいずれかです。
 
 ### Pandas Profiling
 
-* `--output`: アウトプットファイルパス。`gs://`もOK。
+* `--output`: アウトプットHTMLファイルパス。`gs://`もOK。
 
 # アップグレード
 
