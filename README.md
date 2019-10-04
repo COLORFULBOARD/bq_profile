@@ -83,3 +83,17 @@ $ bq_profile upgrade
 updating...
 done
 ```
+
+# デプロイ
+
+デプロイは次のように[colorfulboard/bq_profile](https://cloud.docker.com/u/colorfulboard/repository/docker/colorfulboard/bq_profile)イメージを更新すればOKです。
+**なお、パブリックイメージであるため機密情報は絶対に含めないでください。**
+
+```shell
+$ docker build -t bq_profile:0.5 .
+$ docker tag bq_profile:0.5 colorfulboard/bq_profile:0.5
+$ docker tag bq_profile:0.5 colorfulboard/bq_profile:latest
+$ docker push colorfulboard/bq_profile:0.5
+$ docker push colorfulboard/bq_profile:latest
+```
+
