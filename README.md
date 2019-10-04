@@ -85,7 +85,15 @@ updating...
 done
 ```
 
-# デプロイ
+# コントリビュート！
+
+## プロファイラの追加
+
+[profiler.basic.Profiler](https://github.com/COLORFULBOARD/bq_profile/blob/master/profiler/basic.py#L5)を継承すると自由にプロファイラを追加できます。
+プロファイラの登録は変数[bq_profile.PROFILER](https://github.com/COLORFULBOARD/bq_profile/blob/master/bq_profile.py#L7)で管理しています。
+コマンド引数は全部インスタンス化時に渡されるので、自由に追加して問題ありません。
+
+## デプロイ
 
 デプロイは次のように[colorfulboard/bq_profile](https://cloud.docker.com/u/colorfulboard/repository/docker/colorfulboard/bq_profile)イメージを更新すればOKです。
 **なお、パブリックイメージであるため機密情報は絶対に含めないでください。**
