@@ -18,7 +18,7 @@ Google BigQueryに任意のSQLクエリを発行し、その結果の統計情�
 ```shell
 $ curl https://gist.githubusercontent.com/rhoboro/9c27090715205b8e54c73590830e1b7c/raw/da254ae9bffcadbb564ef3cbb57a2fb7be98617e/bq_profile > bq_profile
 $ chmod +x bq_profile
-$ mv bq_profile /usr/local/bin
+$ mv bq_profile /usr/local/bin/bq_profile
 ```
 
 # 使い方
@@ -27,12 +27,13 @@ $ mv bq_profile /usr/local/bin
 
 ```shell
 $ bq_profile local \
-  --sql "SELECT * FROM my.table WHERE _PARTITIONTIME = TIMESTAMP('2019-10-02')" \
-  --project my-project \
-  --output-table my.stats \
-  --disposition append \
-  --mode sql
+  --sql "SELECT * FROM \`bigquery-public-data.baseball.games_post_wide\`;" \
+  --project myproject \
+  --mode sql \
+  --output-table temporary.sample_stats
 ```
+
+![サンプルイメージ](./sample_image.png)
 
 モードによらず共通のオプションは次のとおりです。
 
@@ -96,4 +97,6 @@ $ docker tag bq_profile:0.5 colorfulboard/bq_profile:latest
 $ docker push colorfulboard/bq_profile:0.5
 $ docker push colorfulboard/bq_profile:latest
 ```
+
+もし`bq_profile`を更新した場合は、[インストール方法](https://github.com/COLORFULBOARD/bq_profile#%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB%E6%96%B9%E6%B3%95)も更新して新しいバージョンのファイルを取得できるようにしてください。
 
