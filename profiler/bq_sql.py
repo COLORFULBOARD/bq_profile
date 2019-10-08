@@ -65,7 +65,7 @@ def get_stats(client, project, table_ref, empty_string='""', max_size=50):
                 f" COUNT(*) - COUNT({f.name}) miss_count,"
                 f" SAFE_DIVIDE(COUNT(*) - COUNT({f.name}),"
                 f" COUNT(*)) miss_rate,"
-                f" {f'DATE_DIFF(MAX({f.name}), MIN({f.name}), DAY) - COUNT(DISTINCT {f.name})' if f.field_type == 'DATE' else '0'} miss_days,"
+                f" {f'DATE_DIFF(MAX({f.name}), MIN({f.name}), DAY) + 1 - COUNT(DISTINCT {f.name})' if f.field_type == 'DATE' else '0'} miss_days,"
                 f" COUNT(DISTINCT {f.name}) unique_count,"
                 f" SAFE_DIVIDE(COUNT(DISTINCT {f.name}), COUNT({f.name})) unique_rate,"
                 f" {f'CAST(APPROX_QUANTILES({f.name}, 4)[ORDINAL(2)] AS STRING)' if f.field_type not in ('STRUCT', 'ARRAY') else 'null'} quantile4_1,"
