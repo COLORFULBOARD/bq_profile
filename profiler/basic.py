@@ -26,9 +26,8 @@ class Profiler:
 
 
 class DescribeProfiler(Profiler):
-    def __init__(self, project, sql, errors, *args, **kwargs):
+    def __init__(self, project, sql, *args, **kwargs):
         super().__init__(project, sql)
-        self.errors = errors
 
     def get_stats(self):
         self.df = pd.read_gbq(self.sql, project_id=self.project, dialect="standard")
@@ -45,9 +44,8 @@ class DescribeProfiler(Profiler):
 
 
 class PandasProfiler(Profiler):
-    def __init__(self, project, sql, errors, *args, **kwargs):
+    def __init__(self, project, sql, *args, **kwargs):
         super().__init__(project, sql)
-        self.errors = errors
 
     def get_stats(self):
         self.df = pd.read_gbq(self.sql, project_id=self.project, dialect="standard")
