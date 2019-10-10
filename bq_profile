@@ -3,13 +3,13 @@
 case "$1" in
 upgrade)
   echo "upgrading..."
-  docker pull colorfulboard/bq_profile:latest --quiet >/dev/null
+  exec docker pull colorfulboard/bq_profile:latest --quiet >/dev/null
   echo "done"
   ;;
 local)
-  docker run -it --rm -v ~/.config/gcloud:/root/.config/gcloud -v $(pwd):/usr/src/app colorfulboard/bq_profile:latest "${@:2:($# - 1)}"
+  exec docker run -it --rm -v ~/.config/gcloud:/root/.config/gcloud -v $(pwd):/usr/src/app colorfulboard/bq_profile:latest "${@:2:($# - 1)}"
   ;;
 *)
-  docker run -it --rm -v $(pwd):/usr/src/app colorfulboard/bq_profile:latest "$@"
+  exec docker run -it --rm -v $(pwd):/usr/src/app colorfulboard/bq_profile:latest "$@"
   ;;
 esac
