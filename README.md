@@ -21,6 +21,13 @@ $ chmod +x bq_profile
 $ mv bq_profile /usr/local/bin/bq_profile
 ```
 
+バージョンが表示されたらインストール成功です。
+
+```shell
+$ bq_profile -v
+x.x.x
+```
+
 # 使い方
 
 こんなコマンドを実行すると、クエリ結果の統計情報がBQ上に書き込まれます。
