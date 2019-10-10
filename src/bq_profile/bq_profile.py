@@ -38,7 +38,7 @@ def upload_to_gcs(uri, filename, project):
 
 
 def show_version():
-    version_parser = argparse.ArgumentParser()
+    version_parser = argparse.ArgumentParser(add_help=False)
     version_parser.add_argument("-v", action="store_true")
     args, _ = version_parser.parse_known_args()
     return args.v
@@ -52,7 +52,7 @@ def parse_args():
     parser.add_argument("--output", default="", help="path or gs://... for output HTML")
     parser.add_argument("--output-table", dest="output_table", default=None)
     parser.add_argument("--disposition", default="fail", choices=("fail", "replace", "append"))
-    parser.add_argument("-v", action="store_true")
+    parser.add_argument("-v", action="store_true", help="show version number")
     args, _ = parser.parse_known_args()
     return args
 
