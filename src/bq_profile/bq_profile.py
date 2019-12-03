@@ -48,7 +48,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--sql", required=True)
     parser.add_argument("--project", dest="project", required=True, help="gcp project id")
-    parser.add_argument("--mode", default="basic", choices=PROFILER.keys())
+    parser.add_argument("--mode", default="describe", choices=PROFILER.keys())
     parser.add_argument("--output", default="", help="path or gs://... for output HTML")
     parser.add_argument("--output-table", dest="output_table", default=None)
     parser.add_argument("--disposition", default="fail", choices=("fail", "replace", "append"))
