@@ -1,5 +1,5 @@
 NAME=bq_profile
-TAG=1.0.0
+TAG=1.1.0
 CMD=
 
 build:
