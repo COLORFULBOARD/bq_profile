@@ -13,6 +13,7 @@ run: build
 
 release:
 	docker build --target=release -t ${NAME}:${TAG} .
-	docker tag ${NAME}:${TAG} ${NAME}:latest
-	docker push ${NAME}:${TAG}
-	docker push ${NAME}:latest
+	docker tag ${NAME}:${TAG} colorfulboard/${NAME}:${TAG}
+	docker tag ${NAME}:${TAG} colorfulboard/${NAME}:latest
+	docker push colorfulboard/${NAME}:${TAG}
+	docker push colorfulboard/${NAME}:latest
