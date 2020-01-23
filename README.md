@@ -100,12 +100,20 @@ done
 プロファイラの登録は変数[bq_profile.PROFILER](https://github.com/COLORFULBOARD/bq_profile/blob/master/bq_profile.py#L7)で管理しています。
 コマンド引数は全部インスタンス化時に渡されます。
 
-## Test Run
+## Test
 
-ローカルでビルドしたDockerイメージを実行します。
+ビルドしたDockerイメージでテストコードを実行します。
 
 ```shell
-$ docker build -t bq_profile:X.Y .
-$ docker run -it --rm -v `pwd`:/usr/src/app -v ~/.config/gcloud:/root/.config/gcloud bq_profile:X.Y --sql "SELECT * FROM \`bigquery-public-data.baseball.games_post_wide\`;" ...
+$ make test
+```
+
+## Run
+
+ビルドしたDockerイメージを実行します。
+
+```shell
+# CMDにbq_profile以降に渡す文字列を全て渡します
+$ make run CMD='--project etl-management --sql "SELECT * FROM \`bigquery-public-data.baseball.games_post_wide\`;"'
 ```
 
