@@ -45,6 +45,35 @@ def tmp_table(client, sql):
         client.delete_dataset(client.dataset(dataset_id))
 
 
+def aggregate(f, table_ref, i, empty_string):
+    return (
+        f"SELECT"
+        f" '{f.name}' name,"
+        f" '{f.field_type}' type,"
+        f" COUNT({f.name}) count,"
+        f" {f'AVG({f.name})' if f.field_type in ('INTEGER', 'FLOAT', 'NUMERIC') else 'null'} average,"
+        f" {f'STDDEV_SAMP({f.name})' if f.field_type in ('INTEGER', 'FLOAT', 'NUMERIC') else 'null'} std,"
+        f" CAST(MAX({f.name}) AS STRING) max,"
+        f" CAST(MIN({f.name}) AS STRING) min,"
+        f" CAST(APPROX_TOP_COUNT({f.name}, 1)[ORDINAL(1)].value AS STRING) mode,"
+        f" COUNT(*) - COUNT({f.name}) miss_count,"
+        f" SAFE_DIVIDE(COUNT(*) - COUNT({f.name}),"
+        f" COUNT(*)) miss_rate,"
+        f" {f'DATE_DIFF(MAX({f.name}), MIN({f.name}), DAY) + 1 - COUNT(DISTINCT {f.name})' if f.field_type == 'DATE' else '0'} miss_days,"
+        f" COUNT(DISTINCT {f.name}) unique_count,"
+        f" SAFE_DIVIDE(COUNT(DISTINCT {f.name}), COUNT({f.name})) unique_rate,"
+        f" {f'CAST(APPROX_QUANTILES({f.name}, 4)[ORDINAL(2)] AS STRING)' if f.field_type not in ('STRUCT', 'ARRAY') else 'null'} quantile4_1,"
+        f" {f'CAST(APPROX_QUANTILES({f.name}, 4)[ORDINAL(3)] AS STRING)' if f.field_type not in ('STRUCT', 'ARRAY') else 'null'} median,"
+        f" {f'CAST(APPROX_QUANTILES({f.name}, 4)[ORDINAL(4)] AS STRING)' if f.field_type not in ('STRUCT', 'ARRAY') else 'null'} quantile4_3,"
+        f" {f'CAST(APPROX_QUANTILES({f.name}, 100)[ORDINAL(2)] AS STRING)' if f.field_type not in ('STRUCT', 'ARRAY') else 'null'} quantile100_1,"
+        f" {f'CAST(APPROX_QUANTILES({f.name}, 100)[ORDINAL(100)] AS STRING)' if f.field_type not in ('STRUCT', 'ARRAY') else 'null'} quantile100_99,"
+        f" {f'COUNTIF({f.name} >= 0)' if f.field_type in ('INTEGER', 'FLOAT', 'NUMERIC') else '0'} not_negatives,"
+        f" {f'COUNTIF({f.name} = 0)' if f.field_type in ('INTEGER', 'FLOAT', 'NUMERIC') else '0'} zeros,"
+        f" {f'COUNTIF({f.name} = {empty_string})' if f.field_type == 'STRING' else '0'} empty_strings,"
+        f" {i} ord FROM {table_ref.dataset_id}.{table_ref.table_id}"
+    )
+
+
 def get_stats(client, project, table_ref, empty_string='""', max_size=50):
     schema = client.get_table(f"{table_ref.dataset_id}.{table_ref.table_id}").schema
     num_columns = len(schema)
@@ -52,32 +81,7 @@ def get_stats(client, project, table_ref, empty_string='""', max_size=50):
 
     sqls = (
         " UNION ALL ".join(
-            (
-                f"SELECT"
-                f" '{f.name}' name,"
-                f" '{f.field_type}' type,"
-                f" COUNT({f.name}) count,"
-                f" {f'AVG({f.name})' if f.field_type in ('INTEGER', 'FLOAT') else 'null'} average,"
-                f" {f'STDDEV_SAMP({f.name})' if f.field_type in ('INTEGER', 'FLOAT') else 'null'} std,"
-                f" CAST(MAX({f.name}) AS STRING) max,"
-                f" CAST(MIN({f.name}) AS STRING) min,"
-                f" CAST(APPROX_TOP_COUNT({f.name}, 1)[ORDINAL(1)].value AS STRING) mode,"
-                f" COUNT(*) - COUNT({f.name}) miss_count,"
-                f" SAFE_DIVIDE(COUNT(*) - COUNT({f.name}),"
-                f" COUNT(*)) miss_rate,"
-                f" {f'DATE_DIFF(MAX({f.name}), MIN({f.name}), DAY) + 1 - COUNT(DISTINCT {f.name})' if f.field_type == 'DATE' else '0'} miss_days,"
-                f" COUNT(DISTINCT {f.name}) unique_count,"
-                f" SAFE_DIVIDE(COUNT(DISTINCT {f.name}), COUNT({f.name})) unique_rate,"
-                f" {f'CAST(APPROX_QUANTILES({f.name}, 4)[ORDINAL(2)] AS STRING)' if f.field_type not in ('STRUCT', 'ARRAY') else 'null'} quantile4_1,"
-                f" {f'CAST(APPROX_QUANTILES({f.name}, 4)[ORDINAL(3)] AS STRING)' if f.field_type not in ('STRUCT', 'ARRAY') else 'null'} median,"
-                f" {f'CAST(APPROX_QUANTILES({f.name}, 4)[ORDINAL(4)] AS STRING)' if f.field_type not in ('STRUCT', 'ARRAY') else 'null'} quantile4_3,"
-                f" {f'CAST(APPROX_QUANTILES({f.name}, 100)[ORDINAL(2)] AS STRING)' if f.field_type not in ('STRUCT', 'ARRAY') else 'null'} quantile100_1,"
-                f" {f'CAST(APPROX_QUANTILES({f.name}, 100)[ORDINAL(100)] AS STRING)' if f.field_type not in ('STRUCT', 'ARRAY') else 'null'} quantile100_99,"
-                f" {f'COUNTIF({f.name} >= 0)' if f.field_type in ('INTEGER', 'FLOAT') else '0'} not_negatives,"
-                f" {f'COUNTIF({f.name} = 0)' if f.field_type == 'INTEGER' else '0'} zeros,"
-                f" {f'COUNTIF({f.name} = {empty_string})' if f.field_type == 'STRING' else '0'} empty_strings,"
-                f" {i} ord FROM {table_ref.dataset_id}.{table_ref.table_id}"
-            )
+            aggregate(f, table_ref, i, empty_string)
             for i, f in enumerate(schema[j * max_size : min(num_columns, (j + 1) * max_size)])
         )
         + " ORDER BY ord;"
