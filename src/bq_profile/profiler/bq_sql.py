@@ -81,7 +81,7 @@ def get_stats(client, project, table_ref, empty_string='""', max_size=50):
 
     sqls = (
         " UNION ALL ".join(
-            aggregate(f, table_ref, i, empty_string)
+            aggregate(f, table_ref, j * max_size + i, empty_string)
             for i, f in enumerate(schema[j * max_size : min(num_columns, (j + 1) * max_size)])
         )
         + " ORDER BY ord;"
