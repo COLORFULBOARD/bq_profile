@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from uuid import uuid4
 
 import pandas as pd
+import pandas_gbq
 from google.cloud import bigquery
 
 from .basic import Profiler
@@ -20,7 +21,7 @@ class SqlProfiler(Profiler):
         self.profile.to_csv(filename, index=False)
 
     def to_bq(self, table, disposition):
-        self.profile.to_gbq(table, project_id=self.project, if_exists=disposition)
+        pandas_gbq.to_gbq(self.profile, table, project_id=self.project, if_exists=disposition)
 
 
 @contextmanager
@@ -28,7 +29,7 @@ def tmp_table(client, sql):
     dataset_id = f"tmp_dataset_{uuid4().hex}"
     table_id = f"tmp_{uuid4().hex}"
     job_config = bigquery.QueryJobConfig()
-    dataset_ref = client.dataset(dataset_id)
+    dataset_ref = bigquery.DatasetReference(client.project, dataset_id)
     client.create_dataset(bigquery.Dataset(dataset_ref))
     job_config.destination = dataset_ref.table(table_id)
     table_ref = None
@@ -42,7 +43,7 @@ def tmp_table(client, sql):
             client.delete_table(table_ref)
         except:
             pass
-        client.delete_dataset(client.dataset(dataset_id))
+        client.delete_dataset(dataset_ref)
 
 
 def aggregate(f, table_ref, i, empty_string):
@@ -87,5 +88,5 @@ def get_stats(client, project, table_ref, empty_string='""', max_size=50):
         + " ORDER BY ord;"
         for j in range(num_repeats)
     )
-    dfs = (pd.read_gbq(sql, project_id=project, dialect="standard") for sql in sqls)
+    dfs = (pandas_gbq.read_gbq(sql, project_id=project, dialect="standard") for sql in sqls)
     return pd.concat(dfs)
